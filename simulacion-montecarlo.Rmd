@@ -1,0 +1,62 @@
+---
+title: "Simulación Montecarlo"
+author: "Anderson Acuña"
+date: "2024-03-12"
+output: 
+  html_document: 
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+> Resolver alguno de los 4 problemas que aparecen en la sección "Otros problemas".
+
+## Pruebas estadísticas de Uniformidad
+
+Para la uniformidad:
+$$
+H_0:R_i \thicksim U(0, 1) \\
+H_1:R_i \nsim U(0, 1)
+$$
+
+### Prueba Kolmogorov Smirnof
+Se basa en la distribución de probabilidad acumulada de la distribución uniforme ideal, y la compara con la distribución de probabilidad acumulada empírica (proviene de los datos).
+
+El procedimiento es:
+
+1. Ordenamos los datos.
+2. 
+
+**Ejemplo:**
+```{r}
+rgenerator_data <- c(0.05, 0.14, 0.44, 0.81, 0.93)
+f_x <- c(0, 0.2, 0.4, 0.6, 0.8) # Aquí al final va el 1.
+
+d1 = f_x - rgenerator_data
+d2 <- c(0.15, 0.26, 0.16, 0.01, 0.07)
+```
+
+El mayor valor de diferencia es 0.26, y el valor crítico para la prueba con $\alpha = 0.05$ es $D_critico = 0.565$; por lo tanto, no se puede rechazar la hipótesis nula.
+
+### Prueba Chi-cuadrado
+
+> Los grados de libertad son la cantidad de intervalos que hay menos 1.
+
+## Pruebas estadísticas de Independencia
+Se aplica un proceso de autocorrelación con los números que fueron generados.
+
+**Ejemplo:** Sea la secuencia de datos:
+```{r}
+numbers_seq <- c(0.12, 0.01, 0.23, 0.28, 0.89, 0.31, 0.64, 0.28, 0.83, 0.93, 0.99, 0.15, 0.33, 0.35, 0.91, 0.41, 0.60, 0.27, 0.75, 0.88, 0.68, 0.49, 0.05, 0.43, 0.95, 0.58, 0.19, 0.36, 0.69, 0.87)
+
+
+M = 4
+lag = 5
+# Seleccionar de 5 al otro 5 y esos utilizarlos para hacer el estimador.
+candidates <- numbers_seq[seq()]
+estimator_p = (1 / M + 1) * sum()
+```
+
+

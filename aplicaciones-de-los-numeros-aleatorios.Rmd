@@ -1,0 +1,75 @@
+---
+title: "Aplicaciones de los números aleatorios"
+author: "Anderson Acuña"
+date: "2024-03-07"
+output: 
+  html_document: 
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Integración Montecarlo
+
+Es un método que nos permite calcular áreas utilizando varibles estocásticas.
+
+Los pasos para el algoritmo son:
+
+1. Se generan varios números aleatorios uniformemente distribuidos para cada una de las dimensiones.
+2. Se evalúa la función en cada uno de los números generados
+
+**Ejemplo:** Estimación de PI.
+```{r}
+x_values = runif(10000)
+y_values = runif(10000)
+
+inCircle = (x_values ** 2 + y_values ** 2) <= 1
+
+points_circle = cbind(x_values[inCircle], y_values[inCircle])
+
+pi_aproximation = 4 * length(points_circle[, 1]) / length(x_values)
+```
+
+**Ejercicio:** Estimar el valor de la siguiente integral.
+$$
+\int^2_{-2} e^{x + x^2}dx
+$$
+Usando la sustitución.
+$$
+y = \frac{x + 2}{4} \rightarrow dy = \frac{1}{4} dx \\
+x = 4y - 2,\ dx = 4dy
+$$
+Construimos la nueva integral.
+$$
+\int^1_0 e^{4y - 2 + 8y^2 - 16y + 4} 4dy \rightarrow \int^1_0 4e^{2 + 12y + 16y^2} dy \\
+4e^2 \int^1_0 e^{4(3y + 4y^2)} dy
+$$
+
+Estimamos el valor de la integral.
+```{r}
+x_values = runif(100)
+y_values = runif(100)
+
+funIntegral <- function(domain_value) {
+  res = exp(4 * (3 * domain_value + 4 * (domain_value**2)))
+  return(res)
+}
+
+underCurve = matrix(data = c(0, 0), ncol = 2)
+
+for(iter in 1:length(x_values)) {
+  flag = funIntegral(x_values[iter]) >= y_values[iter]
+  if (flag) {
+    underCurve = rbind(underCurve, c(x_values[iter], y_values[iter]))
+  }
+}
+
+area_aproximation = (length(underCurve[, 1]) - 1) / length(x_values)
+```
+
+```{r}
+curve(expr = (exp(4 * (3 * x + 4 * (x**2)))), from = 0, to = 1)
+points(x = underCurve[, 1], y = underCurve[, 2])
+```

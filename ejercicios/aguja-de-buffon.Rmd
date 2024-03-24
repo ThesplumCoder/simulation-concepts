@@ -1,0 +1,96 @@
+---
+title: "Problema de la aguja de Buffon"
+output:
+  html_document:
+    toc: true
+    df_print: paged
+  html_notebook:
+    toc: true
+---
+
+# Concepto
+La idea es calcular la probabilidad de que al lanzar agujas al azar, sobre una superficie con líneas equidistantes paralelas, estas agujas crucen alguna de estas líneas. Las líneas deben tener una longitud fija y la distancia entre las líneas también es fija.
+
+# Implementación
+Definimos los parámetros de la aguja y de la superficie con líneas. Sea $l_a$ la longitud de la aguja, y sea $d_l$ la distancia entre las líneas:
+$$
+d_l = 5[cm] \\
+l_a = \frac{d_l}{2} = 2.5[cm]
+$$
+
+```{r}
+needles_generator <- function(amount, board_length) {
+  middle = runif(n = amount, max = board_length)
+  angle = runif(n = amount, max = 90)
+  
+  needles = matrix(data = c(middle, angle), ncol = 2)
+  return(needles)
+}
+
+needle_proyection <- function(needle, needle_length) {
+  proyection = needle_length * sin(needle[2] * (pi / 180))
+  upper_side = needle[1] + proyection
+  lower_side = needle[1] - proyection
+  
+  needle_complete = c(upper_side, needle[1], lower_side)
+  return(needle_complete)
+}
+
+# Calcula las lineas entre las que está la aguja.
+near_lines <- function(needle_center, lines_distance) {
+  distance_line = trunc(needle_center) %% lines_distance
+  lower_line = 0
+  upper_line = 0
+  
+  if(distance_line != 0) {
+    lower_line = trunc(needle_center) - distance_line
+  } else {
+    lower_line = trunc(needle_center)
+  }
+  
+  upper_line = lower_line + lines_distance
+  
+  near_lines_found = c(upper_line, lower_line)
+  return(near_lines_found)
+}
+
+needle_over_line <- function(needle_proyection, distance_of_lines) {
+  flag = FALSE
+  
+  neighboring_lines = near_lines(needle_center = needle_proyection[2], lines_distance = distance_of_lines)
+  
+  # Touch upper limit
+  touch_ul = needle_proyection[1] >= neighboring_lines[1]
+  # Touch lower limit
+  touch_ll = needle_proyection[3] <= neighboring_lines[2]
+  
+  if(touch_ul | touch_ll) {
+    flag = TRUE
+  }
+  
+  return(flag)
+}
+```
+
+```{r}
+trials = 1000
+sample_needles = needles_generator(amount = trials, board_length = 100)
+
+positive_cases = 0
+for(iter in 1:trials) {
+  calc_proyection = needle_proyection(needle = sample_needles[iter, ], needle_length = 2.5)
+  over_line = needle_over_line(needle_proyection = calc_proyection, distance_of_lines = 5)
+  
+  if(over_line) {
+    positive_cases = positive_cases + 1
+  }
+}
+
+aproximation = positive_cases / trials
+
+# REVISAR ESTA PROPORCION
+pivalue = 2 / aproximation
+```
+
+
+
